@@ -683,7 +683,7 @@ def test_retrieval_cites_the_right_source_file():
 - [ ] **Step 2: Run it**
 
 Run: `pytest tests/test_smoke.py -v`
-Expected: PASS (may take 10-30s the first time while it downloads the two small models; fast on subsequent runs).
+Expected: PASS (the first run downloads the two small models — verified at ~130s on one connection, budget a couple minutes rather than seconds; fast on subsequent runs once cached).
 
 - [ ] **Step 3: Run the full test suite**
 
