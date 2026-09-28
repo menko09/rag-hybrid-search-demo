@@ -23,7 +23,7 @@ def build_prompt(question: str, context_chunks: list[Chunk]) -> list[dict]:
 def load_generator():
     """Load the text-generation pipeline. Downloads ~1GB on first call —
     never invoked from automated tests, only from app.py at startup.
-    torch_dtype="auto" uses the checkpoint's native (bf16) dtype instead of
+    dtype="auto" uses the checkpoint's native (bf16) dtype instead of
     upcasting to fp32, which would roughly double memory use — this keeps
     the footprint small enough for free-tier hosts with ~1GB RAM budgets."""
     from transformers import pipeline
@@ -31,8 +31,7 @@ def load_generator():
     return pipeline(
         "text-generation",
         model=GENERATOR_MODEL_NAME,
-        device_map="cpu",
-        torch_dtype="auto",
+        dtype="auto",
         max_new_tokens=300,
         do_sample=False,
     )
