@@ -31,7 +31,10 @@ def _bm25_rank(index: Index, query: str, k: int) -> list[str]:
     return [index.chunks[i].id for i in ranked[:k]]
 
 
-def _default_reranker():
+def load_reranker():
+    """Load the cross-encoder reranker. Callers that run many queries against
+    the same index (e.g. app.py) should load this once and pass it in via
+    `retrieve(..., reranker=...)` rather than relying on the per-call default."""
     from sentence_transformers import CrossEncoder
 
     return CrossEncoder(RERANKER_MODEL_NAME)
@@ -54,7 +57,7 @@ def retrieve(
     if not candidates:
         return []
 
-    reranker = reranker if reranker is not None else _default_reranker()
+    reranker = reranker if reranker is not None else load_reranker()
     pairs = [[query, c.text] for c in candidates]
     scores = reranker.predict(pairs)
     ranked = sorted(zip(scores, candidates), key=lambda pair: pair[0], reverse=True)
