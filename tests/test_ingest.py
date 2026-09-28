@@ -39,3 +39,14 @@ def test_chunk_markdown_keeps_content_before_first_heading():
     assert chunks[0].heading == ""
     assert "Intro paragraph before any heading." in chunks[0].text
     assert [c.heading for c in chunks] == ["", "Title"]
+
+
+def test_load_docs_strips_yaml_frontmatter(tmp_path):
+    (tmp_path / "a.md").write_text(
+        '---\ntitle: "A"\ndescription: "desc"\n---\n\n## Heading\n\nBody A.\n',
+        encoding="utf-8",
+    )
+    chunks = load_docs(tmp_path)
+    assert [c.heading for c in chunks] == ["Heading"]
+    assert "title:" not in chunks[0].text
+    assert "---" not in chunks[0].text

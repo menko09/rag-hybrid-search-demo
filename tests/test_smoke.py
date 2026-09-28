@@ -4,7 +4,7 @@ from rag.index import build_index
 from rag.ingest import load_docs
 from rag.retrieve import retrieve
 
-DATA_DIR = Path(__file__).parent.parent / "data" / "fastapi-docs"
+DATA_DIR = Path(__file__).parent.parent / "data" / "handbook-docs"
 
 
 def test_retrieval_cites_the_right_source_file():
@@ -15,8 +15,6 @@ def test_retrieval_cites_the_right_source_file():
     against real data, not just wiring."""
     chunks = load_docs(DATA_DIR)
     index = build_index(chunks)
-    results = retrieve(
-        index, "How do I declare a path parameter in FastAPI?", top_n=3
-    )
+    results = retrieve(index, "What is the Power of the Pause?", top_n=3)
     sources = {c.source for c in results}
-    assert "path-params.md" in sources
+    assert "power-of-the-pause.md" in sources

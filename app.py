@@ -7,7 +7,7 @@ from rag.ingest import load_docs
 from rag.index import build_index
 from rag.retrieve import load_reranker, retrieve
 
-DATA_DIR = Path(__file__).parent / "data" / "fastapi-docs"
+DATA_DIR = Path(__file__).parent / "data" / "handbook-docs"
 
 
 @st.cache_resource(show_spinner="Building the document index...")
@@ -26,15 +26,16 @@ def get_reranker():
     return load_reranker()
 
 
-st.title("RAG Hybrid Search — FastAPI Docs Q&A")
+st.title("RAG Hybrid Search — Internal Handbook Q&A")
 st.caption(
     "Hybrid (dense + BM25) retrieval, cross-encoder reranking, and a grounded "
-    "local LLM answer over a bundled set of FastAPI documentation pages. "
+    "local LLM answer over a bundled internal company handbook (GitLab's "
+    "public handbook — communication norms, values, and total rewards). "
     "Answers only from the docs shown below the answer — the first question "
     "may take 15-30s on CPU."
 )
 
-question = st.text_input("Ask a question about FastAPI:")
+question = st.text_input("Ask a question about the handbook:")
 
 if question and question.strip():
     index = get_index()

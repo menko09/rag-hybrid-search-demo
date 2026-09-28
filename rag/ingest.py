@@ -6,6 +6,12 @@ from pathlib import Path
 
 _HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 _ATTR_LIST_RE = re.compile(r"\s*\{[^{}]*\}\s*$")
+_FRONTMATTER_RE = re.compile(r"^---\n.*?\n---\n", re.DOTALL)
+
+
+def _strip_frontmatter(text: str) -> str:
+    """Strip a leading YAML frontmatter block (---...---), if present."""
+    return _FRONTMATTER_RE.sub("", text, count=1)
 
 
 @dataclass
@@ -51,6 +57,6 @@ def load_docs(data_dir: Path) -> list[Chunk]:
     """Load and chunk every .md file in data_dir, sorted by filename."""
     chunks: list[Chunk] = []
     for path in sorted(Path(data_dir).glob("*.md")):
-        text = path.read_text(encoding="utf-8")
+        text = _strip_frontmatter(path.read_text(encoding="utf-8"))
         chunks.extend(chunk_markdown(text, source=path.name))
     return chunks

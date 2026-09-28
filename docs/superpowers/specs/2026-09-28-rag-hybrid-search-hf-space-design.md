@@ -126,3 +126,27 @@ Given user's account isn't paying for HF PRO, chose to deploy free instead:
 - If HF PRO is ever added, the code still works there too — just needs a
   Dockerfile again (the original `docker run streamlit on :7860` approach)
   and reverting `GENERATOR_MODEL_NAME` to the 3B model for better answers.
+
+## Addendum 2 (domain pivot, post-launch)
+
+After the first live deploy, swapped the demo's subject matter from FastAPI
+docs to an internal-company-handbook Q&A assistant — a closer match to the
+actual portfolio pitch (automation consulting for businesses) than
+developer docs, and lower reputational risk than the alternative domains
+considered (legal/healthcare demos read worse when a small model
+occasionally answers from general knowledge instead of strict citation,
+which is a real, observed failure mode of the 0.5B model).
+
+- Corpus: `data/fastapi-docs/` → `data/handbook-docs/` — 10 pages vendored
+  from GitLab's public Team Handbook (MIT license): communication norms,
+  company values, total rewards. One fetched page (`top-misused-terms.md`)
+  was dropped — its actual list content is injected by a Hugo shortcode at
+  GitLab's build time, so the vendored copy had no real static content.
+- `rag/ingest.py` gained YAML-frontmatter stripping (`_strip_frontmatter`)
+  in `load_docs` — every handbook page has a `---\ntitle: ...\n---` header
+  that the FastAPI corpus never had; left unstripped it produced junk
+  heading-less chunks. `chunk_markdown` itself is unchanged.
+  `tests/test_smoke.py`'s question/expected-source pair updated to match
+  (`"What is the Power of the Pause?"` → `power-of-the-pause.md`).
+  Verified for real: full suite passes (13 tests) and a real end-to-end
+  generation run (actual models, actual corpus) was checked by hand.

@@ -1,7 +1,10 @@
 # RAG Hybrid Search Demo
 
-Q&A over a bundled set of FastAPI documentation pages. Answers only from
-those docs, and cites the exact passage used.
+An internal-document Q&A assistant: answers questions over a bundled
+company handbook (GitLab's public handbook — communication norms, values,
+and total rewards), only from those docs, and cites the exact passage
+used. Built as a demo of the "employee handbook Q&A bot" pattern common in
+enterprise automation work.
 
 ## How it works
 
@@ -47,8 +50,9 @@ currently requires an [HF PRO](https://huggingface.co/pro) subscription
 
 ## Sample corpus
 
-`data/fastapi-docs/` — 12 pages vendored from the FastAPI project's own
-documentation (MIT license). See `data/fastapi-docs/SOURCE.md`.
+`data/handbook-docs/` — 10 pages vendored from GitLab's public Team
+Handbook (MIT license): communication norms, company values, and total
+rewards. See `data/handbook-docs/SOURCE.md`.
 
 ## Tests
 
