@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from rag.ingest import Chunk
 
-GENERATOR_MODEL_NAME = "Qwen/Qwen2.5-3B-Instruct"
+GENERATOR_MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 
 SYSTEM_PROMPT = (
     'Answer the question using ONLY the provided context. Each context block '
@@ -21,14 +21,18 @@ def build_prompt(question: str, context_chunks: list[Chunk]) -> list[dict]:
 
 
 def load_generator():
-    """Load the text-generation pipeline. Downloads ~6GB on first call —
-    never invoked from automated tests, only from app.py at Space startup."""
+    """Load the text-generation pipeline. Downloads ~1GB on first call —
+    never invoked from automated tests, only from app.py at startup.
+    torch_dtype="auto" uses the checkpoint's native (bf16) dtype instead of
+    upcasting to fp32, which would roughly double memory use — this keeps
+    the footprint small enough for free-tier hosts with ~1GB RAM budgets."""
     from transformers import pipeline
 
     return pipeline(
         "text-generation",
         model=GENERATOR_MODEL_NAME,
         device_map="cpu",
+        torch_dtype="auto",
         max_new_tokens=300,
         do_sample=False,
     )

@@ -96,12 +96,33 @@ concern, out of scope for this Space.
 
 ## Deployment
 
-- New local repo (this one), pushed to two remotes:
-  - GitHub: `menko09/rag-hybrid-search-demo` (public)
-  - HF Space: `huggingface.co/spaces/Jaypare13/rag-hybrid-search-demo`,
-    Streamlit SDK, CPU basic (free tier)
-- HF auth: `hf auth login` (done, user `Jaypare13`), used for
-  `huggingface_hub.create_repo(repo_type="space", space_sdk="streamlit")` +
-  git push to the Space's git remote.
+Superseded at deploy time — see addendum below. Original plan: GitHub +
+a Hugging Face Space (Streamlit SDK, CPU basic free tier).
+
 - `requirements.txt`: streamlit, transformers, sentence-transformers,
   chromadb, rank_bm25, torch (cpu).
+
+## Addendum (deploy-time revision, 2026-09-28)
+
+Two things discovered only at actual deploy time changed the plan above:
+
+1. **HF Spaces no longer accepts `sdk: streamlit`** — only `gradio`,
+   `docker`, or `static`. Streamlit apps now need `sdk: docker` with a
+   Dockerfile.
+2. **Hosting a Docker or Gradio Space on this HF account's free CPU-basic
+   tier returned `402 Payment Required`** — needs an HF PRO subscription
+   ($9/mo). Only static (no-Python) Spaces are free on this account.
+
+Given user's account isn't paying for HF PRO, chose to deploy free instead:
+- **Generator model swapped**: Qwen2.5-3B-Instruct (~6-12GB RAM) →
+  Qwen2.5-0.5B-Instruct (~1GB RAM, loaded with `torch_dtype="auto"` to use
+  the checkpoint's native bf16 rather than upcasting to fp32). Answer
+  quality is noticeably weaker at this size, but it fits a free host's RAM.
+- **Host swapped**: HF Spaces → Streamlit Community Cloud (genuinely free,
+  native Streamlit support, no Dockerfile needed — removed the Dockerfile
+  and `.dockerignore` added for the HF docker-SDK attempt).
+- GitHub repo (`menko09/rag-hybrid-search-demo`) is unaffected — still the
+  canonical source, Streamlit Community Cloud deploys straight from it.
+- If HF PRO is ever added, the code still works there too — just needs a
+  Dockerfile again (the original `docker run streamlit on :7860` approach)
+  and reverting `GENERATOR_MODEL_NAME` to the 3B model for better answers.
