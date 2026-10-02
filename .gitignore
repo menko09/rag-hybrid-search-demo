@@ -4,3 +4,12 @@ __pycache__/
 venv/
 .pytest_cache/
 .cache/
+
+# Secrets - the app needs none today (all models run local, no API keys),
+# but block these preemptively so a future local .env/secrets file can
+# never land in a commit by accident.
+.env
+.env.*
+.streamlit/secrets.toml
+*.pem
+*.key
